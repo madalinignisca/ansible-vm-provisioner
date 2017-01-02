@@ -1,11 +1,13 @@
 ---
 - src: geerlingguy.firewall
 - src: kamaln7.swapfile
+- src: franklinkim.users
 - src: geerlingguy.ntp
 - src: geerlingguy.postfix
 - src: geerlingguy.mysql
 - src: geerlingguy.php
 - src: geerlingguy.php-mysql
+- src: geerlingguy.composer
 - src: geerlingguy.apache
 - src: geerlingguy.apache-php-fpm
 - src: geerlingguy.security

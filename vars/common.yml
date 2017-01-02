@@ -12,6 +12,41 @@ firewall_allowed_tcp_ports:
   - "80"
   - "443"
 
+### USERS and GROUPS
+
+# @see http://docs.ansible.com/ansible/user_module.html
+#
+# users:
+#   - username: foobar              (required)
+#     name: Foo Bar
+#     uid: 1000
+#     group: staff
+#     password: xxxxx
+#     groups: ["adm", "www-data"]
+#     home_mode: "0750"
+#     home_create: yes
+#     home: /path/to/user/home
+#     system: no
+#     authorized_keys: []           (required)
+#     ssh_key_type: rsa
+#     ssh_key_bits: 2048
+#     ssh_key_password: ""
+#     ssh_key_generate: no
+#     ssh_key: "xxx"
+#     shell: /bin/bash
+#
+
+# default user home directory permissions
+users_home_mode: "0750"
+# default user primary group for users
+users_group: staff
+# default user secondary groups
+users_groups:
+  - www-data
+
+users:
+  - username
+
 ### Apache HTTPD
 
 apache_mods_enabled:
@@ -40,6 +75,13 @@ php_fpm_pm_max_children: 2
 php_fpm_pm_start_servers: 1
 php_fpm_pm_min_spare_servers: 1
 php_fpm_pm_max_spare_servers: 2
+
+### Composer and friends
+
+composer_global_packages:
+  # - { name: phpunit/phpunit, release: "4.7.x" }
+  # - { name: phpunit/phpunit, release: "@stable" }
+  - { name: wp-cli/wp-cli, release: "@stable" }
 
 ### MySQL
 
