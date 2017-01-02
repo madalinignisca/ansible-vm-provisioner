@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars/common.yml
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob:
+        - "vars/config.yml"
+  roles:
+    - geerlingguy.firewall
+    - kamaln7.swapfile
+    - geerlingguy.ntp
+    - geerlingguy.postfix
+    - geerlingguy.mysql
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.apache
+    - geerlingguy.apache-php-fpm
+    - geerlingguy.security

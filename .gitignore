@@ -1,0 +1,18 @@
+### Vagrant ###
+.vagrant/
+
+
+### Ansible ###
+*.retry
+roles/
+vars/config.yml
+
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+ubuntu-xenial-16.04-cloudimg-console.log
