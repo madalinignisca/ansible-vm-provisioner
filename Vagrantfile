@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.synced_folder ".", "/vagrant"
-  config.vm.synced_folder "./demo", "/var/www/small.vm"
+  config.vm.synced_folder "./demo", "/var/www/small.vm", create: true
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
