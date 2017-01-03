@@ -16,6 +16,10 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant"
   config.vm.synced_folder "./demo", "/var/www/small.vm", create: true
 
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbook.yml"
   end
