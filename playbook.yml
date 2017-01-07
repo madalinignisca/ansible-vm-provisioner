@@ -15,6 +15,7 @@
     - geerlingguy.mysql
     - geerlingguy.php
     - geerlingguy.php-mysql
+    - geerlingguy.composer
     - geerlingguy.apache
     - geerlingguy.apache-php-fpm
     - geerlingguy.security
