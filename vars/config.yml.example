@@ -6,8 +6,7 @@ apache_remove_default_vhost: true
 apache_vhosts:
   - servername: "small.vm"
     documentroot: "/var/www/small.vm"
-    extra_parameters: |
-      ProxyPassMatch ^/(.*\.php(/.*)?)$ "fcgi://127.0.0.1:9000/var/www/small.vm"
+    extra_parameters: "{{ apache_vhost_php_fpm_parameters }}"
 
 ### MySQL
 

@@ -21,6 +21,11 @@ apache_mods_enabled:
 apache_mods_disabled:
   - mpm_prefork.load
 
+apache_vhost_php_fpm_parameters: |
+  <FilesMatch \.php$>
+    SetHandler "proxy:fcgi://{{ php_fpm_listen }}"
+  </FilesMatch>
+
 ### PHP
 
 php_expose_php: "Off"
