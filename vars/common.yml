@@ -1,5 +1,14 @@
 ---
 
+### VM
+
+vm_box: "ubuntu/xenial64"
+vm_hostname: "small.vm"
+vm_memory: 1024
+vm_cpus: 1
+
+vagrant_synced_folders: []
+
 ### SWAP
 
 swapfile_swappiness: 10
