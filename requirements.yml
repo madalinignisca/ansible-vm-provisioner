@@ -10,3 +10,5 @@
 - src: geerlingguy.apache-php-fpm
 - src: geerlingguy.security
 - src: geerlingguy.composer
+- src: geerlingguy.memcached
+- src: geerlingguy.php-memcached
