@@ -9,6 +9,10 @@ vm_cpus: 1
 
 vagrant_synced_folders: []
 
+### Important tools
+git_packages:
+  - git
+
 ### SWAP
 
 swapfile_swappiness: 10

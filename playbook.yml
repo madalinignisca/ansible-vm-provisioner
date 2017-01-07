@@ -20,4 +20,5 @@
     - geerlingguy.composer
     - geerlingguy.apache
     - geerlingguy.apache-php-fpm
+    - geerlingguy.git
     - geerlingguy.security
