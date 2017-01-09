@@ -43,12 +43,16 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "playbook-amp.yml"
   end
 
-  config.vm.provision "varnish", :type => "ansible_local" do |ansible|
-    ansible.playbook = "playbook-varnish.yml"
+  if vconfig["use_varnish"]
+    config.vm.provision "varnish", :type => "ansible_local" do |ansible|
+      ansible.playbook = "playbook-varnish.yml"
+    end
   end
 
-  config.vm.provision "nginx", :type => "ansible_local" do |ansible|
-    ansible.playbook = "playbook-nginx.yml"
+  if vconfig["use_nginx"]
+    config.vm.provision "nginx", :type => "ansible_local" do |ansible|
+      ansible.playbook = "playbook-nginx.yml"
+    end
   end
 
   config.vm.provision "finish", :type => "ansible_local" do |ansible|

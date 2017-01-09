@@ -1,12 +1,32 @@
 ---
+
+### VM
+vagrant_synced_folders:
+  - local_path: ./demo
+    destination: /var/www/demo
+
+### Firewall
+firewall_allowed_tcp_ports:
+  - "22"
+  - "80"
+  - "443"
+  - "6082"
+
+### HTTPD
 apache_remove_default_vhost: true
 
 ###  VHosts
 
 apache_vhosts:
   - servername: "small.vm"
-    documentroot: "/var/www/small.vm"
+    documentroot: "/var/www/demo"
     extra_parameters: "{{ apache_vhost_php_fpm_parameters }}"
+
+# Php
+php_fpm_pm_max_children: 4
+php_fpm_pm_start_servers: 2
+php_fpm_pm_min_spare_servers: 1
+php_fpm_pm_max_spare_servers: 2
 
 ### MySQL
 
@@ -23,14 +43,28 @@ mysql_root_password: root
 
 # Databases.
 mysql_databases:
-  - name: small_vm
+  - name: "small_vm"
     collation: utf8mb4_general_ci
     encoding: utf8mb4
-#    replicate: 1
 
 # Users.
 mysql_users:
-  - name: small
-    host: 127.0.0.1
-    password: Iamasmallvm
-    priv: small_vm.*:ALL
+  - name: "small"
+    host: "%"
+    password: "Iamasmallvm"
+    priv: "small_vm.*:ALL"
+
+### Varnish
+
+use_varnish: true
+varnish_storage: "malloc,128M"
+
+### Nginx
+
+use_nginx: true
+nginx_vhosts:
+ - listen: "80 default_server"
+   extra_parameters: |
+    location / {
+      proxy_pass  http://127.0.0.1:{{ varnish_listen_port }};
+    }
