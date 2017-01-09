@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = vconfig['vm_box']
   config.vm.hostname = vconfig['vm_hostname']
 
-  config.vm.network :private_network, :type => "dhcp"
+  config.vm.network :private_network, :auto_network => true
 
   config.vm.provider "virtualbox" do |v|
     v.name = vconfig['vm_hostname']
@@ -35,8 +35,24 @@ Vagrant.configure("2") do |config|
     config.cache.scope = :box
   end
 
-  config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "playbook.yml"
+  config.vm.provision "base", :type => "ansible_local" do |ansible|
+    ansible.playbook = "playbook-base.yml"
+  end
+
+  config.vm.provision "amp", :type => "ansible_local" do |ansible|
+    ansible.playbook = "playbook-amp.yml"
+  end
+
+  config.vm.provision "varnish", :type => "ansible_local" do |ansible|
+    ansible.playbook = "playbook-varnish.yml"
+  end
+
+  config.vm.provision "nginx", :type => "ansible_local" do |ansible|
+    ansible.playbook = "playbook-nginx.yml"
+  end
+
+  config.vm.provision "finish", :type => "ansible_local" do |ansible|
+    ansible.playbook = "playbook-finish.yml"
   end
 
 end
