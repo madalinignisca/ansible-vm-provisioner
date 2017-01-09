@@ -2,9 +2,6 @@
 
 ### Apache HTTPD
 
-apache_listen_port: 8080
-apache_listen_port_ssl: 8443
-
 apache_mods_enabled:
   - rewrite.load
   - ssl.load
