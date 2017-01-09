@@ -1,0 +1,5 @@
+---
+
+### Varnish
+
+varnish_listen_port: "7080"
