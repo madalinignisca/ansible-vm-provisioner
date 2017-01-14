@@ -1,5 +1,18 @@
 ---
 
+### VM
+
+vm_box: "ubuntu/xenial64"
+vm_hostname: "small.vm"
+vm_memory: 1024
+vm_cpus: 1
+
+vagrant_synced_folders: []
+
+### Important tools
+git_packages:
+  - git
+
 ### SWAP
 
 swapfile_swappiness: 10
@@ -49,14 +62,60 @@ users:
 
 ### Apache HTTPD
 
+apache_listen_port: 8080
+apache_listen_port_ssl: 8443
+
 apache_mods_enabled:
   - rewrite.load
   - ssl.load
   - mpm_event.load
 apache_mods_disabled:
   - mpm_prefork.load
+  - mpm_worker.load
+
+apache_vhost_php_fpm_parameters: |
+  <FilesMatch \.php$>
+    SetHandler "proxy:fcgi://{{ php_fpm_listen }}"
+  </FilesMatch>
 
 ### PHP
+
+php_version: '7.1'
+
+# Configure PHP paths and packages for PHP 5.6, PHP 7.0 and PHP 7.1.
+php_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm"
+  - "/etc/php/{{ php_version }}/apache2"
+  - "/etc/php/{{ php_version }}/cli"
+php_extension_conf_paths:
+  - "/etc/php/{{ php_version }}/fpm/conf.d"
+  - "/etc/php/{{ php_version }}/apache2/conf.d"
+  - "/etc/php/{{ php_version }}/cli/conf.d"
+php_fpm_daemon: "php{{ php_version }}-fpm"
+php_fpm_conf_path: "/etc/php/{{ php_version }}/fpm"
+php_fpm_pool_conf_path: "{{ php_fpm_conf_path }}/pool.d/www.conf"
+php_mysql_package: "php{{ php_version }}-mysql"
+php_redis_package: "php{{ php_version }}-redis"
+php_memcached_package: "php{{ php_version }}-memcached"
+php_pgsql_package: "php{{ php_version }}-pgsql"
+
+php_packages:
+  - "php{{ php_version }}"
+  - "php{{ php_version }}-apcu"
+  - "php{{ php_version }}-cli"
+  - "php{{ php_version }}-common"
+  - "php{{ php_version }}-curl"
+  - "php{{ php_version }}-dev"
+  - "php{{ php_version }}-fpm"
+  - "php{{ php_version }}-gd"
+  - "php{{ php_version }}-imap"
+  - "php{{ php_version }}-json"
+  - "php{{ php_version }}-mbstring"
+  - "php{{ php_version }}-mcrypt"
+  - "php{{ php_version }}-opcache"
+  - "php{{ php_version }}-sqlite3"
+  - "php{{ php_version }}-xml"
+  - "php{{ php_version }}-yaml"
 
 php_expose_php: "Off"
 php_max_execution_time: "180"
@@ -121,3 +180,23 @@ mysql_root_password: root
 # Set this to `yes` to forcibly update the root password.
 mysql_root_password_update: yes
 mysql_user_password_update: yes
+
+### Varnish
+
+varnish_listen_port: "7080"
+
+### Nginx
+
+nginx_ppa_use: true
+nginx_package_name: "nginx-light"
+
+nginx_extra_http_options: |
+  proxy_redirect     off;
+  proxy_buffering    off;
+  proxy_set_header   X-Real-IP $remote_addr;
+  proxy_set_header   X-Scheme $scheme;
+  proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header   Host $http_host;
+nginx_proxy_cache_path: "/var/cache/nginx keys_zone=cache:32m"
+
+nginx_remove_default_vhost: true

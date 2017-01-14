@@ -8,15 +8,10 @@
       with_fileglob:
         - "vars/config.yml"
   roles:
-    - geerlingguy.firewall
-    - kamaln7.swapfile
-    - franklinkim.users
-    - geerlingguy.ntp
-    - geerlingguy.postfix
     - geerlingguy.mysql
     - geerlingguy.php
     - geerlingguy.php-mysql
+    - geerlingguy.php-memcached
     - geerlingguy.composer
     - geerlingguy.apache
     - geerlingguy.apache-php-fpm
-    - geerlingguy.security

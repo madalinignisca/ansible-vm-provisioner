@@ -1,13 +1,41 @@
 ---
 - src: geerlingguy.firewall
+  version: 2.0.1
 - src: kamaln7.swapfile
+<<<<<<< HEAD
 - src: franklinkim.users
+=======
+  version: master
+>>>>>>> madalin/small-dev-vm-master
 - src: geerlingguy.ntp
+  version: 1.4.0
 - src: geerlingguy.postfix
+  version: 1.1.0
 - src: geerlingguy.mysql
+  version: 2.5.0
 - src: geerlingguy.php
+  version: 3.4.4
 - src: geerlingguy.php-mysql
+<<<<<<< HEAD
 - src: geerlingguy.composer
+=======
+  version: 2.0.1
+>>>>>>> madalin/small-dev-vm-master
 - src: geerlingguy.apache
+  version: 2.0.1
 - src: geerlingguy.apache-php-fpm
+  version: 1.0.2
 - src: geerlingguy.security
+  version: 1.5.0
+- src: geerlingguy.composer
+  version: 1.5.0
+- src: geerlingguy.memcached
+  version: 1.0.7
+- src: geerlingguy.php-memcached
+  version: 2.0.0
+- src: geerlingguy.git
+  version: 1.2.1
+- src: geerlingguy.varnish
+  version: 1.8.1
+- src: geerlingguy.nginx
+  version: 1.9.6

@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars/common.yml
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob:
+        - "vars/config.yml"
+    - include: "tasks/hostname.yml"
+    - include: "tasks/init.yml"
+    - name: Ensure PHP version -specific workspace directory exists.
+      file:
+        path: "/root/php{{ php_version }}"
+        state: directory
+        mode: 0775
+  roles:
+    - geerlingguy.firewall
+    - kamaln7.swapfile
+    - geerlingguy.ntp
+    - geerlingguy.postfix
+    - geerlingguy.git
+    - geerlingguy.memcached
