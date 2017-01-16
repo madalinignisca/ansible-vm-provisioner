@@ -1,10 +1,5 @@
 vcl 4.0;
 
-# This is a basic VCL configuration file for varnish.  See the vcl(7)
-# man page for details on VCL syntax and semantics.
-
-# Default backend definition.  Set this to point to your content
-# server.
 backend default {
   .host = "{{ varnish_default_backend_host }}";
   .port = "{{ varnish_default_backend_port }}";
@@ -21,79 +16,85 @@ acl purge {
   server ip address or hostname;
 }
 
-# unsetting wordpress cookies
-# http://bit.ly/2iyXP79
-
-sub vcl_rec{
-  set req.http.cookie = regsuball(req.http.cookie, "wp-settings-\d+=[^;]+(; )?", "");
-  set req.http.cookie = regsuball(req.http.cookie, "wp-settings-time-\d+=[^;]+(; )?", "");
-  set req.http.cookie = regsuball(req.http.cookie, "wordpress_test_cookie=[^;]+(; )?", "");
-  if (req.http.cookie == "") {
-    unset req.http.cookie;
-  }
-}
-
-# extending caching time
-# http://bit.ly/2jxpnbE
-
 sub vcl_backend_response {
   if (beresp.ttl == 120s) {
     set beresp.ttl = 1h;
   }
 }
 
-# handling purge requsets
-# http://bit.ly/2iyKMTg
-
 sub vcl_recv{
+
+  # return(pass);
   
   if (req.method == "PURGE") {
 
-    # http://bit.ly/2jdjBvN
     if (client.ip !~ purge) {
       return (synth(405));
     }
 
     if (req.http.X-Purge-Method == "regex") {
-
       ban("req.url ~ " + req.url + " &amp;&amp; req.http.host ~ " + req.http.host);
-
       return (synth(200, "Banned."));
-
     } else {
 
       return (purge);
 
     }
   }
-}
 
-# exclude wordpress url
-# http://bit.ly/2jxrtrE
+  set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
 
-if (req.url ~ "wp-admin|wp-login") {
-  return (pass);
-}
+  if (req.restarts == 0) {
+    if (req.http.X-Forwarded-For) {
+      set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
+    } else {
+      set req.http.X-Forwarded-For = client.ip;
+    }
+  }
 
-# IGNORING AJAX REQUESTS
-if (req.http.X-Requested-With == "XMLHttpRequest") {
-    return(pass);
-}
 
-# POST REQUESTS WILL NOT BE CACHED
-if (req.http.Authorization || req.method == "POST") {
-  return (pass);
-}
-
-# ONLY CACHING GET OR HEAD REQUESTS
-if (req.method != "GET" && req.method != "HEAD") {
-  return (pass);
-}
-
-# PREVENTING POST AND EDIT PAGES FROM BEING CACHED
-if (req.url ~ "(wp-admin|post\.php|edit\.php|wp-login)") {
-    return(pass);
-}
-if (req.url ~ "/wp-cron.php" || req.url ~ "preview=true") {
+  if (req.url ~ "wp-admin|wp-login") {
     return (pass);
+  }
+
+  if (req.http.X-Requested-With == "XMLHttpRequest") {
+    return(pass);
+  }
+
+  if (req.http.Authorization || req.method == "POST") {
+    return (pass);
+  }
+
+  if (req.method != "GET" && req.method != "HEAD") {
+    return (pass);
+  }
+
+  if (req.url ~ "(wp-admin|post\.php|edit\.php|wp-login)") {
+    return(pass);
+  }
+
+  if (req.url ~ "/wp-cron.php" || req.url ~ "preview=true") {
+    return (pass);
+  }
+
+  if (req.url ~ "(cart|my-account|checkout|addons)") {
+    return (pass);
+  }
+  if ( req.url ~ "\?add-to-cart=" ) {
+    return (pass);
+  }
+
+  set req.http.cookie = regsuball(req.http.cookie, "wp-settings-\d+=[^;]+(; )?", "");
+  set req.http.cookie = regsuball(req.http.cookie, "wp-settings-time-\d+=[^;]+(; )?", "");
+  set req.http.cookie = regsuball(req.http.cookie, "wordpress_test_cookie=[^;]+(; )?", "");
+
+  set req.http.Cookie = regsuball(req.http.Cookie, "has_js=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "wp-settings-1=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "wp-settings-time-1=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "wordpress_test_cookie=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "PHPSESSID=[^;]+(; )?", "");
+
+  if (req.http.cookie == "") {
+    unset req.http.cookie;
+  }
 }
