@@ -1,35 +1,33 @@
 vcl 4.0;
 
+import std;
+import directors;
+
 backend default {
   .host = "{{ varnish_default_backend_host }}";
   .port = "{{ varnish_default_backend_port }}";
 }
 
-
-acl internal {
-  "192.x.x.x"/24;
-  xxx.xxx.xx.xx;
-}
-
 acl purge {
   "localhost";
-  server ip address or hostname;
+  "127.0.0.1";
 }
 
-sub vcl_backend_response {
-  if (beresp.ttl == 120s) {
-    set beresp.ttl = 1h;
-  }
+sub vcl_init {
+  new vdir = directors.round_robin();
+  vdir.add_backend(default);
 }
 
 sub vcl_recv{
 
   # return(pass);
+
+  set req.backend_hint = vdir.backend();
   
   if (req.method == "PURGE") {
 
     if (client.ip !~ purge) {
-      return (synth(405));
+      return (synth(405, "Not allowed."));
     }
 
     if (req.http.X-Purge-Method == "regex") {
@@ -50,11 +48,6 @@ sub vcl_recv{
     } else {
       set req.http.X-Forwarded-For = client.ip;
     }
-  }
-
-
-  if (req.url ~ "wp-admin|wp-login") {
-    return (pass);
   }
 
   if (req.http.X-Requested-With == "XMLHttpRequest") {
@@ -94,7 +87,156 @@ sub vcl_recv{
   set req.http.Cookie = regsuball(req.http.Cookie, "wordpress_test_cookie=[^;]+(; )?", "");
   set req.http.Cookie = regsuball(req.http.Cookie, "PHPSESSID=[^;]+(; )?", "");
 
-  if (req.http.cookie == "") {
+
+  set req.http.Cookie = regsuball(req.http.Cookie, "__utm.=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "_ga=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "utmctr=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "utmcmd.=[^;]+(; )?", "");
+  set req.http.Cookie = regsuball(req.http.Cookie, "utmccn.=[^;]+(; )?", "");
+
+  set req.http.Cookie = regsuball(req.http.Cookie, "__cfduid=[^;]+(; )?", "");
+
+  if (req.http.cookie == "^\s*$") {
     unset req.http.cookie;
   }
+
+  if (!(req.url ~ "(wp-login|wp-admin|cart|my-account|checkout|addons|wordpress-social-login|wp-login\.php|forumPM|members)")) {
+    unset req.http.cookie;
+  }
+
+  set req.url = std.querysort(req.url);
+
+  if (req.url ~ "^[^?]*\.(mp[34]|rar|tar|tgz|wav|zip|bz2|xz|7z|avi|mov|ogm|mpe?g|mk[av])(\?.*)?$") {
+    unset req.http.Cookie;
+    return (hash);
+  }
+
+  if (req.url ~ "^[^?]*\.(bmp|bz2|css|doc|eot|flv|gif|ico|jpeg|jpg|js|less|pdf|png|rtf|swf|txt|woff|xml)(\?.*)?$") {
+    unset req.http.Cookie;
+    return (hash);
+  }
+
+  if (req.url ~ "^[^?]*\.(html|htm|gz)(\?.*)?$") {
+    unset req.http.Cookie;
+    return (hash);
+  }
+
+  if (req.http.Authorization) {
+    return(pass);
+  }
+}
+
+sub vcl_pipe {
+  set bereq.http.Connection = "Close";
+
+  return (pipe);
+}
+
+sub vcl_pass {
+  return (pass);
+}
+
+sub vcl_hash {
+  hash_data(req.url);
+
+  if (req.http.host) {
+    hash_data(req.http.host);
+  } else {
+    hash_data(server.ip);
+  }
+
+  # hash cookies for requests that have them
+  if (req.http.Cookie) {
+    hash_data(req.http.Cookie);
+  }
+
+  # If the client supports compression, keep that in a different cache
+  if (req.http.Accept-Encoding) {
+      hash_data(req.http.Accept-Encoding);
+  }
+
+  return (lookup);
+}
+
+sub vcl_backend_response {
+  if ( bereq.method == "POST" || bereq.http.Authorization ) {
+    set beresp.uncacheable = true;
+    set beresp.ttl = 120s;
+    return (deliver);
+  }
+
+  if (beresp.status == 301 || beresp.status == 302) {
+    set beresp.http.Location = regsub(beresp.http.Location, ":[0-9]+", "");
+  }
+  if (beresp.ttl > 0s) {
+    unset beresp.http.expires;
+    set beresp.http.cache-control = "max-age=900";
+    set beresp.ttl = 1d; # how long you cache objects
+    set beresp.http.magicmarker = "1";
+  }
+
+  if (bereq.url ~ "^[^?]*\.(css|eot|gif|ico|jpeg|jpg|js|less|png|swf|woff|xml)(\?.*)?$") {
+    set beresp.ttl = 2d;
+    unset beresp.http.set-cookie;
+  }
+
+  if (bereq.url ~ "^[^?]*\.(bmp|doc|txt|rtf|pdf|rar|tar|tgz|wav|zip|bz2|xz|7z|wav|mp[34]|flv|avi|mov|ogm|mpe?g|mk[av])(\?.*)?$") {
+    unset beresp.http.set-cookie;
+    set beresp.do_stream = true;
+    set beresp.do_gzip = false;
+  }
+
+  if (bereq.url ~ "^[^?]*\.(html|htm|gz)(\?.*)?$") {
+    set beresp.ttl = 1d;
+    unset beresp.http.set-cookie;
+  }
+
+  set beresp.grace = 12h;
+
+  return (deliver);
+}
+
+sub vcl_deliver {
+
+  if (obj.hits > 0) {
+    set resp.http.X-Cache = "HIT";
+  } else {
+    set resp.http.X-Cache = "MISS";
+  }
+
+  set resp.http.X-Cache-Hits = obj.hits;
+
+  unset resp.http.X-Powered-By;
+  unset resp.http.Server;
+  unset resp.http.X-Drupal-Cache;
+  unset resp.http.X-Varnish;
+  unset resp.http.Age;
+  unset resp.http.Via;
+  unset resp.http.Link;
+  unset resp.http.X-Generator;
+
+  if (resp.http.magicmarker) {
+    unset resp.http.magicmarker;
+    set resp.http.age = "0";
+  }
+
+  return (deliver);
+}
+
+sub vcl_synth {
+  if (resp.status == 720) {
+    set resp.http.Location = resp.reason;
+    set resp.status = 301;
+    return (deliver);
+  } elseif (resp.status == 721) {
+    set resp.http.Location = resp.reason;
+    set resp.status = 302;
+    return (deliver);
+  }
+
+  return (deliver);
+}
+
+sub vcl_fini {
+  return (ok);
 }
