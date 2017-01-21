@@ -137,10 +137,9 @@ php_fpm_pm_max_spare_servers: 2
 
 ### Composer and friends
 
-composer_global_packages:
+composer_global_packages: []
   # - { name: phpunit/phpunit, release: "4.7.x" }
   # - { name: phpunit/phpunit, release: "@stable" }
-  - { name: wp-cli/wp-cli, release: "@stable" }
 
 ### MySQL
 
