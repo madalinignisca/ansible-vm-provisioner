@@ -5,6 +5,7 @@
 ### Ansible ###
 *.retry
 vars/config.yml
+hosts
 
 
 ### VisualStudioCode ###
