@@ -67,11 +67,11 @@ apache_listen_port_ssl: 8443
 
 apache_mods_enabled:
   - rewrite.load
-  - ssl.load
   - mpm_event.load
 apache_mods_disabled:
   - mpm_prefork.load
   - mpm_worker.load
+  - ssl.load
 
 apache_vhost_php_fpm_parameters: |
   <FilesMatch \.php$>
@@ -144,26 +144,26 @@ composer_global_packages: []
 ### MySQL
 
 # Memory settings (default values optimized ~128MB RAM).
-mysql_key_buffer_size: "64M"
-mysql_max_allowed_packet: "16M"
-mysql_table_open_cache: "64"
-mysql_sort_buffer_size: "1M"
-mysql_read_buffer_size: "1M"
-mysql_read_rnd_buffer_size: "1M"
-mysql_myisam_sort_buffer_size: "8M"
-mysql_thread_cache_size: "1"
-mysql_query_cache_size: "16M"
-mysql_query_cache_limit: "1M"
-mysql_max_connections: "64"
-mysql_tmp_table_size: "16M"
-mysql_max_heap_table_size: "16M"
+# mysql_key_buffer_size: "64M"
+# mysql_max_allowed_packet: "16M"
+# mysql_table_open_cache: "64"
+# mysql_sort_buffer_size: "1M"
+# mysql_read_buffer_size: "1M"
+# mysql_read_rnd_buffer_size: "1M"
+# mysql_myisam_sort_buffer_size: "8M"
+# mysql_thread_cache_size: "1"
+# mysql_query_cache_size: "16M"
+# mysql_query_cache_limit: "1M"
+# mysql_max_connections: "64"
+# mysql_tmp_table_size: "16M"
+# mysql_max_heap_table_size: "16M"
 
 # Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
-mysql_innodb_buffer_pool_size: "64M"
+# mysql_innodb_buffer_pool_size: "64M"
 
 # Replication settings (replication is only enabled if master/user have values).
-mysql_max_binlog_size: "10M"
-mysql_expire_logs_days: "7"
+# mysql_max_binlog_size: "10M"
+# mysql_expire_logs_days: "7"
 
 # Set this to the user ansible is logging in as - should have root
 # or sudo access
@@ -196,6 +196,21 @@ nginx_extra_http_options: |
   proxy_set_header   X-Scheme $scheme;
   proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header   Host $http_host;
+  proxy_set_header   X-Forwarded-Proto https;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_prefer_server_ciphers on;
+  ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+  ssl_ecdh_curve secp384r1;
+  ssl_session_cache shared:SSL:10m;
+  ssl_session_tickets off;
+  ssl_stapling on;
+  ssl_stapling_verify on;
+  ssl_dhparam /etc/ssl/private/dhparams.pem;
+  resolver 8.8.8.8 8.8.4.4 valid=300s;
+  resolver_timeout 5s;
+  add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+  add_header X-Frame-Options DENY;
+  add_header X-Content-Type-Options nosniff;
 nginx_proxy_cache_path: "/var/cache/nginx keys_zone=cache:32m"
 
 nginx_remove_default_vhost: true
