@@ -67,6 +67,9 @@ apache_listen_port_ssl: 8443
 
 apache_mods_enabled:
   - rewrite.load
+  - expires.load
+  - deflate.load
+  - headers.load
   - mpm_event.load
 apache_mods_disabled:
   - mpm_prefork.load
