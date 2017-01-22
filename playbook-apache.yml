@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - vars/common.yml
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob:
+        - "vars/config.yml"
+  roles:
+    - geerlingguy.apache
+    - geerlingguy.apache-php-fpm

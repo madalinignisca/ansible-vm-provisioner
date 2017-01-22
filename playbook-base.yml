@@ -15,8 +15,7 @@
         state: directory
         mode: 0775
   roles:
-    - geerlingguy.firewall
-    - kamaln7.swapfile
+    # - kamaln7.swapfile
     - geerlingguy.ntp
     - geerlingguy.postfix
     - geerlingguy.git

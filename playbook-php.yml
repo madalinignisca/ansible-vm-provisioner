@@ -8,4 +8,7 @@
       with_fileglob:
         - "vars/config.yml"
   roles:
-    - geerlingguy.security
+    - geerlingguy.php
+    - geerlingguy.php-mysql
+    - geerlingguy.php-memcached
+    - geerlingguy.composer
