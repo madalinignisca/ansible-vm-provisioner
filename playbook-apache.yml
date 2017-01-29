@@ -9,10 +9,9 @@
     - include_vars: "{{ item }}"
       with_fileglob:
         - "vars/config.yml"
-    - name: Add repository for Apache 2.4.9+ on Ubuntu 12 and 14.
+    - name: Add repository for Apache.
       apt_repository: repo='ppa:ondrej/apache2'
 
   roles:
     - geerlingguy.apache
-    - alban.andrieu.pagespeed
     - geerlingguy.apache-php-fpm
