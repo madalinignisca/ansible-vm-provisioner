@@ -63,10 +63,10 @@ mysql_max_connections: "64"
 mysql_tmp_table_size: "16M"
 mysql_max_heap_table_size: "16M"
 
-Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
+# Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
 mysql_innodb_buffer_pool_size: "64M"
 
-Replication settings (replication is only enabled if master/user have values).
+# Replication settings (replication is only enabled if master/user have values).
 mysql_max_binlog_size: "10M"
 mysql_expire_logs_days: "7"
 
