@@ -4,6 +4,8 @@
 
   vars_files:
     - vars/common.yml
+    - vars/php-common.yml
+    - vars/httpd-common.yml
 
   pre_tasks:
     - include_vars: "{{ item }}"

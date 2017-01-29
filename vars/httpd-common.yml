@@ -1,0 +1,16 @@
+---
+
+### Apache HTTPD
+
+apache_mods_enabled:
+  - rewrite.load
+  - ssl.load
+  - mpm_event.load
+apache_mods_disabled:
+  - mpm_prefork.load
+  - mpm_worker.load
+
+apache_vhost_php_fpm_parameters: |
+  <FilesMatch \.php$>
+    SetHandler "proxy:fcgi://{{ php_fpm_listen }}"
+  </FilesMatch>

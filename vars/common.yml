@@ -25,41 +25,6 @@ firewall_allowed_tcp_ports:
   - "80"
   - "443"
 
-### USERS and GROUPS
-
-# @see http://docs.ansible.com/ansible/user_module.html
-#
-# users:
-#   - username: foobar              (required)
-#     name: Foo Bar
-#     uid: 1000
-#     group: staff
-#     password: xxxxx
-#     groups: ["adm", "www-data"]
-#     home_mode: "0750"
-#     home_create: yes
-#     home: /path/to/user/home
-#     system: no
-#     authorized_keys: []           (required)
-#     ssh_key_type: rsa
-#     ssh_key_bits: 2048
-#     ssh_key_password: ""
-#     ssh_key_generate: no
-#     ssh_key: "xxx"
-#     shell: /bin/bash
-#
-
-# default user home directory permissions
-users_home_mode: "0750"
-# default user primary group for users
-users_group: staff
-# default user secondary groups
-users_groups:
-  - www-data
-
-users:
-  - username
-
 ### Apache HTTPD
 
 apache_listen_port: 8080
@@ -139,35 +104,29 @@ php_fpm_pm_start_servers: 1
 php_fpm_pm_min_spare_servers: 1
 php_fpm_pm_max_spare_servers: 2
 
-### Composer and friends
-
-composer_global_packages: []
-  # - { name: phpunit/phpunit, release: "4.7.x" }
-  # - { name: phpunit/phpunit, release: "@stable" }
-
 ### MySQL
 
-# Memory settings (default values optimized ~128MB RAM).
-# mysql_key_buffer_size: "64M"
-# mysql_max_allowed_packet: "16M"
-# mysql_table_open_cache: "64"
-# mysql_sort_buffer_size: "1M"
-# mysql_read_buffer_size: "1M"
-# mysql_read_rnd_buffer_size: "1M"
-# mysql_myisam_sort_buffer_size: "8M"
-# mysql_thread_cache_size: "1"
-# mysql_query_cache_size: "16M"
-# mysql_query_cache_limit: "1M"
-# mysql_max_connections: "64"
-# mysql_tmp_table_size: "16M"
-# mysql_max_heap_table_size: "16M"
+Memory settings (default values optimized ~128MB RAM).
+mysql_key_buffer_size: "64M"
+mysql_max_allowed_packet: "16M"
+mysql_table_open_cache: "64"
+mysql_sort_buffer_size: "1M"
+mysql_read_buffer_size: "1M"
+mysql_read_rnd_buffer_size: "1M"
+mysql_myisam_sort_buffer_size: "8M"
+mysql_thread_cache_size: "1"
+mysql_query_cache_size: "16M"
+mysql_query_cache_limit: "1M"
+mysql_max_connections: "64"
+mysql_tmp_table_size: "16M"
+mysql_max_heap_table_size: "16M"
 
-# Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
-# mysql_innodb_buffer_pool_size: "64M"
+Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
+mysql_innodb_buffer_pool_size: "64M"
 
-# Replication settings (replication is only enabled if master/user have values).
-# mysql_max_binlog_size: "10M"
-# mysql_expire_logs_days: "7"
+Replication settings (replication is only enabled if master/user have values).
+mysql_max_binlog_size: "10M"
+mysql_expire_logs_days: "7"
 
 # Set this to the user ansible is logging in as - should have root
 # or sudo access

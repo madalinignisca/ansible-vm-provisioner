@@ -4,13 +4,15 @@
 vagrant_synced_folders:
   - local_path: ./demo
     destination: /var/www/demo
+    create: true
+
+development_mode: true
 
 ### Firewall
 firewall_allowed_tcp_ports:
   - "22"
   - "80"
   - "443"
-  - "6082"
 
 ### HTTPD
 apache_remove_default_vhost: true
@@ -54,17 +56,15 @@ mysql_users:
     password: "Iamasmallvm"
     priv: "small_vm.*:ALL"
 
-### Varnish
-
-use_varnish: true
-varnish_storage: "malloc,128M"
-
 ### Nginx
 
-use_nginx: true
 nginx_vhosts:
  - listen: "80 default_server"
    extra_parameters: |
     location / {
       proxy_pass  http://127.0.0.1:{{ varnish_listen_port }};
     }
+
+### Varnish
+
+varnish_storage: "malloc,128M"
