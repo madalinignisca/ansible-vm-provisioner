@@ -21,29 +21,11 @@ php_redis_package: "php{{ php_version }}-redis"
 php_memcached_package: "php{{ php_version }}-memcached"
 php_pgsql_package: "php{{ php_version }}-pgsql"
 
-php_packages:
-  - "php{{ php_version }}"
-  - "php{{ php_version }}-apcu"
-  - "php{{ php_version }}-cli"
-  - "php{{ php_version }}-common"
-  - "php{{ php_version }}-curl"
-  - "php{{ php_version }}-dev"
-  - "php{{ php_version }}-fpm"
-  - "php{{ php_version }}-gd"
-  - "php{{ php_version }}-imap"
-  - "php{{ php_version }}-json"
-  - "php{{ php_version }}-mbstring"
-  - "php{{ php_version }}-mcrypt"
-  - "php{{ php_version }}-opcache"
-  - "php{{ php_version }}-sqlite3"
-  - "php{{ php_version }}-xml"
-  - "php{{ php_version }}-yaml"
-
 php_expose_php: "Off"
 php_max_execution_time: "180"
 php_max_input_vars: "8192"
 php_date_timezone: "UTC"
-php_output_buffering: "Off"
+php_output_buffering: "Off" # Learn to do proper PHP applications!
 
 # Set this to false if you're not using PHP with Apache/Nginx/etc.
 php_enable_webserver: true
