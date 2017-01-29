@@ -8,4 +8,5 @@
       with_fileglob:
         - "vars/config.yml"
   roles:
+    - geerlingguy.firewall
     - geerlingguy.security

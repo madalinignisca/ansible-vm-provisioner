@@ -3,16 +3,20 @@
   version: 2.0.1
 - src: kamaln7.swapfile
   version: master
+- src: franklinkim.users
+  version: master
 - src: geerlingguy.ntp
   version: 1.4.0
 - src: geerlingguy.postfix
   version: 1.1.0
 - src: geerlingguy.mysql
-  version: 2.5.0
+  version: 2.5.1
 - src: geerlingguy.php
   version: 3.4.4
 - src: geerlingguy.php-mysql
   version: 2.0.1
+- src: geerlingguy.composer
+  version: 1.5.0
 - src: geerlingguy.apache
   version: 2.0.1
 - src: geerlingguy.apache-php-fpm
@@ -31,3 +35,7 @@
   version: 1.8.1
 - src: geerlingguy.nginx
   version: 1.9.6
+- src: geerlingguy.certbot
+  version: 0.2.1
+- src: alban.andrieu.pagespeed
+  version: master

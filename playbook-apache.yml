@@ -1,20 +1,20 @@
 ---
 - hosts: all
   become: yes
+
   vars_files:
     - vars/common.yml
-    - vars/mysql-common.yml
     - vars/php-common.yml
     - vars/httpd-common.yml
+
   pre_tasks:
     - include_vars: "{{ item }}"
       with_fileglob:
         - "vars/config.yml"
+    - name: Add repository for Apache 2.4.9+ on Ubuntu 12 and 14.
+      apt_repository: repo='ppa:ondrej/apache2'
+
   roles:
-    - geerlingguy.mysql
-    - geerlingguy.php
-    - geerlingguy.php-mysql
-    - geerlingguy.php-memcached
-    - geerlingguy.composer
     - geerlingguy.apache
+    - alban.andrieu.pagespeed
     - geerlingguy.apache-php-fpm
